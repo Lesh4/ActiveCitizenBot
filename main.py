@@ -172,6 +172,10 @@ class Bot:
         """Class constructor with webdriver initialization"""
         self.driver = webdriver.Chrome(getcwd() + "\\chromedriver.exe")
 
+    def close(self):
+        """ Closes the webbrowser """
+        self.driver.close()
+
     def vote(self):
         """ Votes in different types of questions"""
         driver = self.driver
@@ -241,3 +245,4 @@ class Bot:
 BOT = Bot()
 BOT.vote()
 BOT.mini_vote()
+BOT.close()
