@@ -6,6 +6,7 @@ from re import findall
 from time import sleep
 from os import getcwd
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 
 class VotingPrepare:
@@ -164,7 +165,14 @@ class Bot:
 
     def __init__(self):
         """Class constructor with webdriver initialization"""
-        self.driver = webdriver.Chrome(getcwd() + "\\chromedriver.exe")
+        #self.driver = webdriver.Chrome(getcwd() + "\\chromedriver.exe")
+        chrome_options = Options()  
+        chrome_options.add_argument("--headless")  
+        chrome_options.add_argument("--window-size=1920,1080")
+
+        self.driver = webdriver.Chrome(executable_path= getcwd() + "\\chromedriver.exe",
+                                chrome_options=chrome_options
+                                )  
 
     def close(self):
         """ Closes the webbrowser """
@@ -179,6 +187,7 @@ class Bot:
         with open("data.json", "r") as read_file:
             data = load(read_file)
         prepare.login(data["login"], data["password"])
+        driver.get_screenshot_as_file("capture.png")
         voting_count = prepare.available_votings_click()
 
         for _ in range(voting_count):
@@ -204,6 +213,7 @@ class Bot:
             # return to votings
             driver.get("https://ag.mos.ru/poll?filters=active")
             sleep(1)
+        driver.get_screenshot_as_file("capture1.png")
 
     def mini_vote(self):
         """ Rates noveltys"""
@@ -234,6 +244,7 @@ class Bot:
 
             driver.get("https://ag.mos.ru/novelties?filters=active")
             sleep(1)
+        driver.get_screenshot_as_file("capture2.png")
 
 
 BOT = Bot()
