@@ -148,7 +148,7 @@ class TypesOfquestions:
         """ Checks existence of other questions (for 1 and 3 tupes)"""
         content = self.driver.find_element_by_xpath(
             "//section[@class='questions-container']").get_attribute("innerHTML")
-        if findall('question collapsed ng-star-inserted', content):
+        if findall('question', content) and findall('collapsed', content) and findall('ng-star-inserted', content):
             return True
         return False
 
