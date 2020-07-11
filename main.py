@@ -171,8 +171,7 @@ class Bot:
         chrome_options.add_argument("--window-size=1920,1080")
 
         self.driver = webdriver.Chrome(executable_path= getcwd() + "\\chromedriver.exe",
-                                chrome_options=chrome_options
-                                )  
+                                       chrome_options=chrome_options)  
 
     def close(self):
         """ Closes the webbrowser """
@@ -225,6 +224,7 @@ class Bot:
             "//ag-cards-grid").get_attribute("innerHTML")
         count_assessments = findall("ag-novelty-card", content)
 
+        #TODO: задебажить(цикл работает лишний раз - не всегда)
         for _ in count_assessments:
             button = "//div[@class='footer ng-star-inserted']/div"
             driver.find_element_by_xpath(button).click()
