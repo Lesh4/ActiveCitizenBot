@@ -74,7 +74,7 @@ class TypesOfquestions:
         увиличивается на 1 и выбирается следующий вопрос.
         """
         self.driver = driver
-        self.num = 1  # counters of number of guestions
+        self.num = 1  # счетчик номера вопроса
 
     #FIXME: 2 функции делают по сути одно и тоже, просто в пути меняется последнее слово. Стоит объединить эти функции в одну,
     # а в качетсве параметра передавать как раз последнее слово (app-radio-button или app-checkbox)
