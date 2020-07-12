@@ -76,7 +76,7 @@ class TypesOfquestions:
         self.driver = driver
         self.num = 1  # счетчик номера вопроса
 
-    #FIXME: 2 функции делают по сути одно и тоже, просто в пути меняется последнее слово. Стоит объединить эти функции в одну,
+    # FIXME: 2 функции делают по сути одно и тоже, просто в пути меняется последнее слово. Стоит объединить эти функции в одну,
     # а в качетсве параметра передавать как раз последнее слово (app-radio-button или app-checkbox)
     def circle(self):
         """ Работа с типом вопросов Круг """
@@ -89,7 +89,7 @@ class TypesOfquestions:
                                                 ag-poll-question[{self.num}]/div/ \
                                                 ag-variant[2]/section/div/app-radio-button").click()
             sleep(2)
-        # иначе выбирается первый вариант    
+        # иначе выбирается первый вариант
         else:
             self.driver.find_element_by_xpath(variant_path).click()
             sleep(2)
@@ -115,7 +115,7 @@ class TypesOfquestions:
                                                 ag-poll-question[{self.num}]/div/ \
                                                 ag-variant[2]/section/div/app-checkbox").click()
             sleep(2)
-        # иначе выбирается первый вариант  
+        # иначе выбирается первый вариант
         else:
             self.driver.find_element_by_xpath(variant_path).click()
             sleep(2)
@@ -177,13 +177,13 @@ class Bot:
 
     def __init__(self):
         """ Конструктор класса с инициализацией вебдрайвера """
-        #self.driver = webdriver.Chrome(getcwd() + "\\chromedriver.exe") #TODO: нужно для тестов
-        chrome_options = Options()  
-        chrome_options.add_argument("--headless")  
+        # self.driver = webdriver.Chrome(getcwd() + "\\chromedriver.exe") #TODO: нужно для тестов
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--window-size=1920,1080")
         # работа браузера в невидимом режиме
-        self.driver = webdriver.Chrome(executable_path= getcwd() + "\\chromedriver.exe",
-                                       chrome_options=chrome_options)  
+        self.driver = webdriver.Chrome(executable_path=getcwd() + "\\chromedriver.exe",
+                                       chrome_options=chrome_options)
 
     def close(self):
         """ Закрывает браузер """
