@@ -68,6 +68,8 @@ class TypesOfquestions:
         self.driver = driver
         self.num = 1  # counters of number of guestions
 
+    #FIXME: 2 функции делают по сути одно и тоже, просто в пути меняется последнее слово. Стоит объединить эти функции в одну,
+    # а в качетсве параметра передавать как раз последнее слово
     def circle(self):
         """ Works with type Circle"""
         sleep(2)
@@ -186,7 +188,7 @@ class Bot:
         with open("data.json", "r") as read_file:
             data = load(read_file)
         prepare.login(data["login"], data["password"])
-        driver.get_screenshot_as_file("capture.png")
+        driver.get_screenshot_as_file("capture.png") #TODO: убрать (требовалось для теста)
         voting_count = prepare.available_votings_click()
 
         for _ in range(voting_count):
@@ -212,7 +214,7 @@ class Bot:
             # return to votings
             driver.get("https://ag.mos.ru/poll?filters=active")
             sleep(1)
-        driver.get_screenshot_as_file("capture1.png")
+        driver.get_screenshot_as_file("capture1.png") #TODO: убрать (требовалось для теста)
 
     def mini_vote(self):
         """ Rates noveltys"""
@@ -244,7 +246,7 @@ class Bot:
 
             driver.get("https://ag.mos.ru/novelties?filters=active")
             sleep(1)
-        driver.get_screenshot_as_file("capture2.png")
+        driver.get_screenshot_as_file("capture2.png") #TODO: убрать (требовалось для теста)
 
 
 BOT = Bot()
