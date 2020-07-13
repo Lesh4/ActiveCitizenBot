@@ -74,17 +74,17 @@ class TypesOfquestions:
         увиличивается на 1 и выбирается следующий вопрос.
         """
         self.driver = driver
-        self.num = 1  # счетчик номера вопроса
+        self.question_number = 1  # счетчик номера вопроса
 
     def circle_and_square_type(self, type):
         """ Работа с типом вопросов Круг """
         sleep(2)
         # если вариант ответа: "Свой вариант", то выбирается второй
         if self.check_variant(variant_path := f"//section[@class='questions-container']/ \
-                                                ag-poll-question[{self.num}]/div/ \
+                                                ag-poll-question[{self.question_number}]/div/ \
                                                 ag-variant/section/div/{type}"):
             self.driver.find_element_by_xpath(f"//section[@class='questions-container']/ \
-                                                ag-poll-question[{self.num}]/div/ \
+                                                ag-poll-question[{self.question_number}]/div/ \
                                                 ag-variant[2]/section/div/{type}").click()
             sleep(2)
         # иначе выбирается первый вариант
@@ -97,7 +97,7 @@ class TypesOfquestions:
             sleep(1)
             self.click_next_question()
             sleep(1)
-            self.num += 1  # увеличение счетчика номера вопроса
+            self.question_number += 1  # увеличение счетчика номера вопроса
             self.type_of_question(
                 ".//ag-poll-question[@class='question ng-star-inserted']/div")
         sleep(1)
@@ -106,9 +106,8 @@ class TypesOfquestions:
         """ Работа с типов вопросов Викторина """
         pass
 
-    def type_of_question(self, path):
+    def type_of_question(self, question_type_path):
         """ определяет какой тип вопроса """
-        question_type_path = path
         content = self.driver.find_element_by_xpath(
             question_type_path).get_attribute("innerHTML")
         if findall('app-radio-button', content):
