@@ -233,7 +233,7 @@ class Bot:
         # количесвто доступных оценок
         content = driver.find_element_by_xpath(
             "//ag-cards-grid").get_attribute("innerHTML")
-        count_assessments = findall("ag-novelty-card", content)
+        count_assessments = findall("<ag-novelty-card", content)
 
         for _ in count_assessments:
             button = "//div[@class='footer ng-star-inserted']/div"
