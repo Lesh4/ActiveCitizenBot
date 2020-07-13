@@ -76,45 +76,16 @@ class TypesOfquestions:
         self.driver = driver
         self.num = 1  # счетчик номера вопроса
 
-    # FIXME: 2 функции делают по сути одно и тоже, просто в пути меняется последнее слово. 
-    # Стоит объединить эти функции в одну,
-    # а в качетсве параметра передавать как раз последнее слово (app-radio-button или app-checkbox)
-    def circle(self):
+    def circle_and_square_type(self, type):
         """ Работа с типом вопросов Круг """
         sleep(2)
         # если вариант ответа: "Свой вариант", то выбирается второй
         if self.check_variant(variant_path := f"//section[@class='questions-container']/ \
                                                 ag-poll-question[{self.num}]/div/ \
-                                                ag-variant/section/div/app-radio-button"):
+                                                ag-variant/section/div/{type}"):
             self.driver.find_element_by_xpath(f"//section[@class='questions-container']/ \
                                                 ag-poll-question[{self.num}]/div/ \
-                                                ag-variant[2]/section/div/app-radio-button").click()
-            sleep(2)
-        # иначе выбирается первый вариант
-        else:
-            self.driver.find_element_by_xpath(variant_path).click()
-            sleep(2)
-
-        if self.check_next_question():
-            # если существует следующий вопрос, то кликает на него
-            sleep(1)
-            self.click_next_question()
-            sleep(1)
-            self.num += 1  # увеличение счетчика номера вопроса
-            self.type_of_question(
-                ".//ag-poll-question[@class='question ng-star-inserted']/div")
-        sleep(1)
-
-    def square(self):
-        """ Работа с типом вопросов Квадрат """
-        sleep(1)
-        # если вариант ответа: "Свой вариант", то выбирается второй
-        if self.check_variant(variant_path := f"//section[@class='questions-container']/ \
-                                                ag-poll-question[{self.num}]/div/ \
-                                                ag-variant/section/div/app-checkbox"):
-            self.driver.find_element_by_xpath(f"//section[@class='questions-container']/ \
-                                                ag-poll-question[{self.num}]/div/ \
-                                                ag-variant[2]/section/div/app-checkbox").click()
+                                                ag-variant[2]/section/div/{type}").click()
             sleep(2)
         # иначе выбирается первый вариант
         else:
@@ -141,9 +112,9 @@ class TypesOfquestions:
         content = self.driver.find_element_by_xpath(
             question_type_path).get_attribute("innerHTML")
         if findall('app-radio-button', content):
-            self.circle()
+            self.circle_and_square_type('app-radio-button')
         elif findall('checkbox', content):
-            self.square()
+            self.circle_and_square_type('app-checkbox')
         else:
             self.victorina()
 
