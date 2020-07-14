@@ -1,24 +1,28 @@
 """
-This program votes in "Active citizen"
+Эта программа автоматически голосует на протале Активный Гражданин.
 """
 from json import load
 from re import findall
 from time import sleep
 from os import getcwd
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 
 class VotingPrepare:
-    """ This class logins in ag.mos.ru
-    and gives to the Bot start page with
-    available votings"""
+    """
+    Класс логинится на сайте ag.mos.ru и
+    подготовливает для бота стартовую страницу для голосования.
+    Кратко: зарегался --> зашел на сайт -->
+    --> нажал на кнопку доступных голосований --> вернул их количество.
+    """
 
     def __init__(self, driver):
-        """Class constructor with webdriver initialization"""
+        """ Конструктор класса с инициализацией вебдрайвера """
         self.driver = driver
 
     def login(self, username, password):
-        """ Login in ag.mos.ru """
+        """ Логинится на сайте ag.mos.ru """
         driver = self.driver
         driver.get("https://ag.mos.ru/home")
         driver.maximize_window()
@@ -44,7 +48,7 @@ class VotingPrepare:
         sleep(3)
 
     def available_votings_click(self):
-        """ Finds button with count of available votings"""
+        """ Нажимает на кнопку доступных голосований и возвращает их количество """
         available_votings_button = "//*[@class='available-polls-button ng-star-inserted']"
         votings_count = findall(
             r"(\d+)", self.driver.find_element_by_xpath(available_votings_button).text)
@@ -54,87 +58,67 @@ class VotingPrepare:
 
 
 class TypesOfquestions:
-    """ Has different algorithms for each type of question.
-    Types of questions:
-    - Circle (1 answer variant)
-    - Some count of Circle question (a lot of questions with 1 answer variant)
-    - Square (several answer variants/one or more variant)
-    - Some count of Square question (a lot of questions with several answer variants)
-    - Victorina type (always choose 'Нет, не хочу участвовать')
+    """
+    Класс, содержащий алгоритмы голосования для каждого типа, а именно:
+    - Круг (1 вариант ответа)
+    - Несколько вопросов типа Круг (один вариант ответа в каждом вопросе)
+    - Квадрат (несколько варинтов ответа)
+    - Несколько вопросов типа Квадрат (несколько вариантов ответа в каждом вопросе)
+    - тип Викторина (всегда выбирает вариант - Нет, не хочу участвовать) #TODO: не реализовано
     """
 
     def __init__(self, driver):
+        """
+        Конструктор класса с инициализацией вебдрайвера и счетчиком номера вопроса.
+        Голосование начинается с первого вопроса и дальше, если существует новый, счетчик
+        увиличивается на 1 и выбирается следующий вопрос.
+        """
         self.driver = driver
-        self.num = 1  # counters of number of guestions
+        self.question_number = 1  # счетчик номера вопроса
 
-    def circle(self):
-        """ Works with type Circle"""
+    def circle_and_square_type(self, type):
+        """ Работа с типом вопросов Круг """
         sleep(2)
+        # если вариант ответа: "Свой вариант", то выбирается второй
         if self.check_variant(variant_path := f"//section[@class='questions-container']/ \
-                                                ag-poll-question[{self.num}]/div/ \
-                                                ag-variant/section/div/app-radio-button"):
+                                                ag-poll-question[{self.question_number}]/div/ \
+                                                ag-variant/section/div/{type}"):
             self.driver.find_element_by_xpath(f"//section[@class='questions-container']/ \
-                                                ag-poll-question[{self.num}]/div/ \
-                                                ag-variant[2]/section/div/app-radio-button").click()
+                                                ag-poll-question[{self.question_number}]/div/ \
+                                                ag-variant[2]/section/div/{type}").click()
             sleep(2)
+        # иначе выбирается первый вариант
         else:
             self.driver.find_element_by_xpath(variant_path).click()
             sleep(2)
 
         if self.check_next_question():
-            # if 'next_question' is, then click its
+            # если существует следующий вопрос, то кликает на него
             sleep(1)
             self.click_next_question()
             sleep(1)
-            self.num += 1  # update counter of number of guestions
-            self.type_of_question(
-                ".//ag-poll-question[@class='question ng-star-inserted']/div")
-        sleep(1)
-
-    def square(self):
-        """ Works with type Square"""
-        sleep(1)
-        if self.check_variant(variant_path := f"//section[@class='questions-container']/ \
-                                                ag-poll-question[{self.num}]/div/ \
-                                                ag-variant/section/div/app-checkbox"):
-            # if variant is 'свой вариант', then choose the second
-            self.driver.find_element_by_xpath(f"//section[@class='questions-container']/ \
-                                                ag-poll-question[{self.num}]/div/ \
-                                                ag-variant[2]/section/div/app-checkbox").click()
-            sleep(2)
-        else:
-            # choose the first variant
-            self.driver.find_element_by_xpath(variant_path).click()
-            sleep(2)
-
-        if self.check_next_question():
-            # if 'next_question' is, then click its
-            sleep(1)
-            self.click_next_question()
-            sleep(1)
-            self.num += 1  # update counter of number of guestions
+            self.question_number += 1  # увеличение счетчика номера вопроса
             self.type_of_question(
                 ".//ag-poll-question[@class='question ng-star-inserted']/div")
         sleep(1)
 
     def victorina(self):
-        """ Works with type Victorina"""
+        """ Работа с типов вопросов Викторина """
         pass
 
-    def type_of_question(self, path):
-        """ Defines what type of question is """
-        question_type_path = path
+    def type_of_question(self, question_type_path):
+        """ определяет какой тип вопроса """
         content = self.driver.find_element_by_xpath(
             question_type_path).get_attribute("innerHTML")
         if findall('app-radio-button', content):
-            self.circle()
+            self.circle_and_square_type('app-radio-button')
         elif findall('checkbox', content):
-            self.square()
+            self.circle_and_square_type('app-checkbox')
         else:
             self.victorina()
 
     def check_variant(self, variant_path):
-        """ Checks an option according to the principle: is there 'Свой вариант'"""
+        """ Проверяет является ли вариант "Своим ответом" """
         var = r"Свой вариант ответа"
         content = self.driver.find_element_by_xpath(
             variant_path).get_attribute("innerHTML")
@@ -144,21 +128,15 @@ class TypesOfquestions:
         return False
 
     def check_next_question(self):
-        """ Checks existence of other questions (for 1 and 3 tupes)"""
+        """ Проверяет наличие следующего вопроса для каждого типа """
         content = self.driver.find_element_by_xpath(
             "//section[@class='questions-container']").get_attribute("innerHTML")
-        if findall('question question--collapsed collapsed ng-star-inserted', content):
-            return True
-        elif findall('question collapsed ng-star-inserted \
-                      question--active question--collapsed', content):
-            return True
-        elif findall('question question--active question-- \
-                      collapsed collapsed ng-star-inserted', content):
+        if findall('question', content) and findall('collapsed', content) and findall('ng-star-inserted', content):
             return True
         return False
 
     def click_next_question(self):
-        """ Clicks next question (for 1 and 3 tupes)"""
+        """ Кликает на следующий вопрос (для всех типов) """
         sleep(1)
         self.driver.find_element_by_xpath(
             "//svg-icon[@class='icon-arrow ng-star-inserted']").click()
@@ -166,17 +144,27 @@ class TypesOfquestions:
 
 
 class Bot:
-    """ This class is for work with browser """
+    """ Класс, работающий с браузером """
 
     def __init__(self):
-        """Class constructor with webdriver initialization"""
-        self.driver = webdriver.Chrome(getcwd() + "\\chromedriver.exe")
+        """ Конструктор класса с инициализацией вебдрайвера """
+        # self.driver = webdriver.Chrome(getcwd() + "\\chromedriver.exe") #TODO: нужно для тестов
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--window-size=1920,1080")
+        # работа браузера в невидимом режиме
+        self.driver = webdriver.Chrome(executable_path=getcwd() + "\\chromedriver.exe",
+                                       chrome_options=chrome_options)
+
+    def close(self):
+        """ Закрывает браузер """
+        self.driver.close()
 
     def vote(self):
-        """ Votes in different types of questions"""
+        """ Голосование в разных типах вопросов """
         driver = self.driver
 
-        # prepare for voting
+        # подготовка к голосованию
         prepare = VotingPrepare(self.driver)
         with open("data.json", "r") as read_file:
             data = load(read_file)
@@ -185,12 +173,12 @@ class Bot:
 
         for _ in range(voting_count):
             sleep(1)
-            # choose the first voting
+            # выбирает первое голосование
             vote_button = "//*[@class='ng-star-inserted']/article/div[3]/div"
             driver.find_element_by_xpath(vote_button).click()
             sleep(1)
 
-            # determining the type of question and choose the algorithms
+            # определение типа вопроса и выбор алгоритма голосования
             algorithm = TypesOfquestions(driver)
             algorithm.type_of_question(
                 ".//ag-poll-question[@class='question question--active ng-star-inserted']/div")
@@ -203,19 +191,19 @@ class Bot:
             driver.find_element_by_xpath(no_button).click()
             sleep(1)
 
-            # return to votings
+            # возвращение к открытым голосованиям
             driver.get("https://ag.mos.ru/poll?filters=active")
             sleep(1)
 
     def mini_vote(self):
-        """ Rates noveltys"""
+        """ Оценивает городские новинки """
         driver = self.driver
         driver.get("https://ag.mos.ru/novelties?filters=active")
 
-        # count of open 'городские новинки'
+        # количесвто доступных оценок
         content = driver.find_element_by_xpath(
             "//ag-cards-grid").get_attribute("innerHTML")
-        count_assessments = findall("ag-novelty-card", content)
+        count_assessments = findall("<ag-novelty-card", content)
 
         for _ in count_assessments:
             button = "//div[@class='footer ng-star-inserted']/div"
@@ -241,3 +229,4 @@ class Bot:
 BOT = Bot()
 BOT.vote()
 BOT.mini_vote()
+BOT.close()
