@@ -200,7 +200,7 @@ class Bot:
         driver = self.driver
         driver.get("https://ag.mos.ru/novelties?filters=active")
 
-        # количесвто доступных оценок
+        # количество доступных оценок
         content = driver.find_element_by_xpath(
             "//ag-cards-grid").get_attribute("innerHTML")
         count_assessments = findall("<ag-novelty-card", content)
