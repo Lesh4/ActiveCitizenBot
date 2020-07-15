@@ -76,21 +76,18 @@ class TypesOfquestions:
         self.driver = driver
         self.question_number = 1  # счетчик номера вопроса
 
-    def circle_and_square_type(self, type):
+    def circle_and_square_type(self, question_type):
         """ Работа с типом вопросов Круг """
         sleep(2)
-        # если вариант ответа: "Свой вариант", то выбирается второй
+        # если вариант ответа юзер должен ввести сам, то выбирается второй,
+        # иначе остается выбран первый
         if self.check_variant(f"//section[@class='questions-container']/ \
                                 ag-poll-question[{self.question_number}]/div/ \
-                                ag-variant/section/div/{type}"):
+                                ag-variant/section/div/{question_type}"):
             self.driver.find_element_by_xpath(f"//section[@class='questions-container']/ \
                                                 ag-poll-question[{self.question_number}]/div/ \
-                                                ag-variant[2]/section/div/{type}").click()
+                                                ag-variant[2]/section/div/{question_type}").click()
             sleep(2)
-        # # иначе выбирается первый вариант
-        # else:
-        #     self.driver.find_element_by_xpath(variant_path).click()
-        #     sleep(2)
 
         if self.check_next_question():
             # если существует следующий вопрос, то кликает на него
