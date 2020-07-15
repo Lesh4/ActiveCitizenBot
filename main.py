@@ -157,14 +157,12 @@ class Bot:
 
     def __init__(self):
         """ Конструктор класса с инициализацией вебдрайвера """
-        self.driver = webdriver.Chrome(
-            getcwd() + "\\chromedriver.exe")  # TODO: нужно для тестов
-        # chrome_options = Options()
-        # chrome_options.add_argument("--headless")
-        # chrome_options.add_argument("--window-size=1920,1080")
-        # # работа браузера в невидимом режиме
-        # self.driver = webdriver.Chrome(executable_path=getcwd() + "\\chromedriver.exe",
-        #                                chrome_options=chrome_options)
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--window-size=1920,1080")
+        # работа браузера в невидимом режиме
+        self.driver = webdriver.Chrome(executable_path=getcwd() + "\\chromedriver.exe",
+                                       chrome_options=chrome_options)
 
     def close(self):
         """ Закрывает браузер """
