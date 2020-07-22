@@ -76,20 +76,17 @@ class TypesOfquestions:
         self.driver = driver
         self.question_number = 1  # счетчик номера вопроса
 
-    def circle_and_square_type(self, type):
+    def circle_and_square_type(self, question_type):
         """ Работа с типом вопросов Круг """
         sleep(2)
-        # если вариант ответа: "Свой вариант", то выбирается второй
-        if self.check_variant(variant_path := f"//section[@class='questions-container']/ \
-                                                ag-poll-question[{self.question_number}]/div/ \
-                                                ag-variant/section/div/{type}"):
+        # если вариант ответа юзер должен ввести сам, то выбирается второй,
+        # иначе остается выбран первый
+        if self.check_variant(f"//section[@class='questions-container']/ \
+                                ag-poll-question[{self.question_number}]/div/ \
+                                ag-variant/section/div/{question_type}"):
             self.driver.find_element_by_xpath(f"//section[@class='questions-container']/ \
                                                 ag-poll-question[{self.question_number}]/div/ \
-                                                ag-variant[2]/section/div/{type}").click()
-            sleep(2)
-        # иначе выбирается первый вариант
-        else:
-            self.driver.find_element_by_xpath(variant_path).click()
+                                                ag-variant[2]/section/div/{question_type}").click()
             sleep(2)
 
         if self.check_next_question():
@@ -119,11 +116,20 @@ class TypesOfquestions:
 
     def check_variant(self, variant_path):
         """ Проверяет является ли вариант "Своим ответом" """
-        var = r"Свой вариант ответа"
+        var = r'<div _ngcontent-serverapp-c14="" class="modal-content">'
+
+        # кликаем на вариант
+        self.driver.find_element_by_xpath(variant_path).click()
+
+        # проверяем не выскочило ли поле для ввода своего варианта
         content = self.driver.find_element_by_xpath(
-            variant_path).get_attribute("innerHTML")
+            "/html/body").get_attribute("innerHTML")
+
         var_list = findall(var, content)
         if var_list:
+            # если поля для ввода есть, то закрываем его
+            close_button = ".//button[@class='modal-window__close-button ng-star-inserted']"
+            self.driver.find_element_by_xpath(close_button).click()
             return True
         return False
 
@@ -148,7 +154,6 @@ class Bot:
 
     def __init__(self):
         """ Конструктор класса с инициализацией вебдрайвера """
-        # self.driver = webdriver.Chrome(getcwd() + "\\chromedriver.exe") #TODO: нужно для тестов
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--window-size=1920,1080")
