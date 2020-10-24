@@ -149,6 +149,9 @@ class Bot:
     def __init__(self):
         """ Конструктор класса с инициализацией вебдрайвера """
         # self.driver = webdriver.Chrome(getcwd() + "\\chromedriver.exe") #TODO: нужно для тестов
+        # если вы хотите видеть как работает бот, то нужно закомментировать
+        # строки ниже в функции  __init__ и раскоменнтировать строку
+        # self.driver = webdriver.Chrome(getcwd() + "\\chromedriver.exe") (выше)
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--window-size=1920,1080")
