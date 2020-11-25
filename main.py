@@ -87,7 +87,11 @@ class TypesOfquestions:
             self.driver.find_element_by_xpath(f"//section[@class='questions-container']/ \
                                                 ag-poll-question[{self.question_number}]/div/ \
                                                 ag-variant[2]/section/div/{question_type}").click()
-            sleep(2)
+        elif self.check_choose_some_variant_from_list(f"//section[@class='questions-container']/ \
+                                ag-poll-question[{self.question_number}]/div/ \
+                                ag-variant/section/div/{question_type}"):
+            pass
+        sleep(2)
 
         if self.check_next_question():
             # если существует следующий вопрос, то кликает на него
@@ -120,6 +124,7 @@ class TypesOfquestions:
 
         # кликаем на вариант
         self.driver.find_element_by_xpath(variant_path).click()
+        sleep(2)
 
         # проверяем не выскочило ли поле для ввода своего варианта
         content = self.driver.find_element_by_xpath(
@@ -132,6 +137,16 @@ class TypesOfquestions:
             self.driver.find_element_by_xpath(close_button).click()
             return True
         return False
+
+    def check_choose_some_variant_from_list(self, path):
+        """ Проверка на случай, при котором юзер должен выбрать вариант из списка ответов """
+        var = r'<div _ngcontent-serverapp-c14="" class="modal-content">'
+        # кликаем на вариант по заданному пути
+        self.driver.find_element_by_xpath(path).click()
+        sleep(2)
+
+        # если появилось окно выбора раличных вариантов ответа, значит возвращается True
+
 
     def check_next_question(self):
         """ Проверяет наличие следующего вопроса для каждого типа """
